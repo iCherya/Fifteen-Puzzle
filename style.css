@@ -1,3 +1,46 @@
+.board {
+    display: block;
+    position: relative;
+    width: 30vw;
+    min-width: 300px;
+    min-height: 300px;
+    height: 30vw;
+    margin: 10px auto;
+    border: 2px solid steelblue;
+    background: rgb(235, 239, 245);
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+
+.cell {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(25% - 4px);
+    height: calc(25% - 4px);
+    box-sizing: border-box;
+    border: 1px solid steelblue;
+    box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.2);
+    margin: 2px;
+    background: white;
+    font-size: 40px;
+    color: rgb(32, 86, 129);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 300;
+    border-radius: 5px;
+}
+
+.cell--can-move {
+    background-color: lightsteelblue;
+    cursor: pointer;
+    color: white;
+    transition: all .2s ease-in;
+}
+
+.cell--can-move:hover {
+    background-color: steelblue;
+}
 
 .contacts-links {
     text-align: center;

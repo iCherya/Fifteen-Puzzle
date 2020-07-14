@@ -6,10 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>15 puzzle</title>
     <link rel="stylesheet" href="style.css">
-    <script src="Board.js"></script>
+    <script src="./js/lib.js" defer></script>
+    <script src="./js/Game.js" defer></script>
+    <script src="./js/Cell.js" defer></script>
+    <script src="./js/index.js" defer></script>
 </head>
 
 <body>
+    <div class="board">
+        <div class="cell" style="top: 0; left: 0;">1</div>
+        <div class="cell" style="top: 0; left: 25%;">2</div>
+        <div class="cell" style="top: 0; left: 50%;">3</div>
+        <div class="cell" style="top: 0; left: 75%;">4</div>
+        <div class="cell" style="top: 25%; left: 0;">5</div>
+        <div class="cell" style="top: 25%; left: 25%;">6</div>
+        <div class="cell" style="top: 25%; left: 50%;">7</div>
+        <div class="cell" style="top: 25%; left: 75%;">8</div>
+        <div class="cell" style="top: 50%; left: 0;">9</div>
+        <div class="cell cell--can-move" style="top: 50%; left: 25%;">10</div>
+        <div class="cell" style="top: 50%; left: 50%;">11</div>
+        <div class="cell" style="top: 50%; left: 75%;">12</div>
+        <div class="cell" style="top: 75%; left: 0;">13</div>
+        <div class="cell" style="top: 75%; left: 25%;">14</div>
+        <div class="cell" style="top: 75%; left: 50%;">15</div>
+    </div>
+
+
+
     <div class="contacts-links">
         <a href="https://github.com/iCherya/Fifteen-Puzzle" target="_blank">
             <svg height="32" viewbox="0 0 16 16" width="32">

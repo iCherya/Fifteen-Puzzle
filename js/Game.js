@@ -5,6 +5,7 @@ class Game {
             board = Game.createRandomBoard(),
                 container
         } = props;
+
         this.board = {};
         this.isWin = false;
         this.container = container;
@@ -12,28 +13,49 @@ class Game {
         this.move = this.move.bind(this);
 
         this.init(board);
+
         document.addEventListener('keyup', this.keyUp.bind(this));
     }
-    static canBoardWin = function (board) {
+    static canBoardWin(board) {
         let N = Math.ceil(board.findIndex(cell => cell === 'empty') / 4);
         for (let i = 0; i < 15; i++) {
             if (board[i] !== 'empty') {
                 N += board.filter((number, index) => number !== 'empty' && index < i && number < board[i]).length;
             }
         }
-        return N % 2 !== 0;
+        return N % 2 != 0;
     }
-    static convertArrayToBoard = function (boardArray) {
+    static rotateBoard(board) {
+        const size = Math.sqrt(board.length);
+        let board2d = create2dArray(board, size);
+        let rotatedBoard = [];
+
+        for (let i = 0; i < size; ++i) {
+            for (let j = 0; j < size; ++j) {
+                if (!rotatedBoard[j]) rotatedBoard[j] = [];
+                rotatedBoard[j][i] = board2d[size - 1 - i][j];
+            }
+        }
+
+        return rotatedBoard.flat();
+    }
+    static convertArrayToBoard(boardArray) {
         return boardArray.reduce((board, cell, idx) => {
             board[idx] = cell;
             return board;
         }, {});
     }
-    static createRandomBoard = function () {
-        return Game.convertArrayToBoard(Game.START_BOARD
+    static createRandomBoard() {
+        let randomBoard = Game.START_BOARD
             .concat()
-            .sort(() => Math.random() - 0.5)
-        );
+            .sort(() => Math.random() - 0.5);
+        if (Game.canBoardWin(randomBoard)) {
+            return Game.convertArrayToBoard(randomBoard);
+        } else {
+            randomBoard = Game.rotateBoard(randomBoard);
+            return Game.convertArrayToBoard(randomBoard);
+        }
+
     }
     checkWin() {
         return Game.START_BOARD

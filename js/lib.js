@@ -25,3 +25,10 @@ function render(renderItems, rootEl) {
         rootEl.append(renderItems);
     }
 }
+
+function create2dArray(array, size) {
+    for (var x, i = 0, c = -1, l = array.length, result = []; i < l; i++) {
+        (x = i % size) ? result[c][x] = array[i]: result[++c] = [array[i]];
+    }
+    return result;
+}

@@ -32,3 +32,18 @@ function create2dArray(array, size) {
     }
     return result;
 }
+
+function rotateArray(array) {
+    const size = Math.sqrt(array.length);
+    let board2d = create2dArray(array, size);
+    let rotatedBoard = [];
+
+    for (let i = 0; i < size; ++i) {
+        for (let j = 0; j < size; ++j) {
+            if (!rotatedBoard[j]) rotatedBoard[j] = [];
+            rotatedBoard[j][i] = board2d[size - 1 - i][j];
+        }
+    }
+
+    return rotatedBoard.flat();
+}

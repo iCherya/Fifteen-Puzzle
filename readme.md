@@ -9,3 +9,4 @@ The **"15-puzzle"** game (also called Gem Puzzle, Boss Puzzle, Game of Fifteen, 
 * HTML
 * CSS
 * JavaScript
+* [Hammer.JS](https://hammerjs.github.io/) for swipe events support.

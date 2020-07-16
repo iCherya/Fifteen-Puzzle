@@ -1,9 +1,9 @@
 class Game {
-    static START_BOARD = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 'empty'];
     constructor(props) {
+        this.START_BOARD = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 'empty'];
         const {
-            board,
-            container
+            board = this.createRandomBoard(),
+                container
         } = props;
 
         this.board = {};
@@ -12,9 +12,15 @@ class Game {
         this.container.classList.add('board');
         this.move = this.move.bind(this);
         this.moveCount = 0;
+
         this.init(board);
 
-        document.addEventListener('keyup', this.keyUp.bind(this));
+        const swipes = new Hammer(container);
+        swipes.get('swipe').set({
+            direction: Hammer.DIRECTION_ALL
+        });
+        swipes.on("swipeleft swiperight swipeup swipedown", this.moveControls.bind(this));
+        document.addEventListener('keyup', this.moveControls.bind(this));
     }
     static canBoardWin(array) {
         let parity = 0;
@@ -47,40 +53,26 @@ class Game {
             return parity % 2 == 0;
         }
     }
-    static rotateBoard(board) {
-        const size = Math.sqrt(board.length);
-        let board2d = create2dArray(board, size);
-        let rotatedBoard = [];
-
-        for (let i = 0; i < size; ++i) {
-            for (let j = 0; j < size; ++j) {
-                if (!rotatedBoard[j]) rotatedBoard[j] = [];
-                rotatedBoard[j][i] = board2d[size - 1 - i][j];
-            }
-        }
-
-        return rotatedBoard.flat();
-    }
     static convertArrayToBoard(boardArray) {
         return boardArray.reduce((board, cell, idx) => {
             board[idx] = cell;
             return board;
         }, {});
     }
-    static createRandomBoard() {
-        let randomBoard = Game.START_BOARD
+    createRandomBoard() {
+        let randomBoard = this.START_BOARD
             .concat()
             .sort(() => Math.random() - 0.5);
 
         if (Game.canBoardWin(randomBoard)) {
             return Game.convertArrayToBoard(randomBoard);
         } else {
-            randomBoard = Game.rotateBoard(randomBoard);
+            randomBoard = rotateArray(randomBoard);
             return Game.convertArrayToBoard(randomBoard);
         }
     }
     checkWin() {
-        return Game.START_BOARD
+        return this.START_BOARD
             .every((number, index) => this.board[index] !== 'empty' ? this.board[index].props.number === number : this.board[index] === number);
     }
     getIndex(number) {
@@ -148,32 +140,13 @@ class Game {
         this.render();
         render(cells, this.container);
     }
-    keyUp(event) {
-        let direction, from;
-        switch (event.code) {
-            case 'ArrowUp':
-            case 'KeyW':
-                direction = 'TOP';
-                from = 'BOTTOM';
-                break;
-            case 'ArrowDown':
-            case 'KeyS':
-                direction = 'BOTTOM';
-                from = 'TOP';
-                break;
-            case 'ArrowLeft':
-            case 'KeyA':
-                direction = 'LEFT';
-                from = 'RIGHT';
-                break;
-            case 'ArrowRight':
-            case 'KeyD':
-                direction = 'RIGHT';
-                from = 'LEFT';
-                break;
-            default:
-                break;
-        }
+    moveControls(event) {
+        let from;
+        if (event.code === 'ArrowUp' || event.type === 'swipeup') from = 'BOTTOM';
+        if (event.code === 'ArrowDown' || event.type === 'swipedown') from = 'TOP';
+        if (event.code === 'ArrowLeft' || event.type === 'swipeleft') from = 'RIGHT';
+        if (event.code === 'ArrowRight' || event.type === 'swiperight') from = 'LEFT';
+
         const emptyIndex = this.getIndex('empty'),
             siblings = this.getSiblingsIndex(emptyIndex);
         if (siblings[from] >= 0 && siblings[from] != null) {
@@ -211,7 +184,6 @@ class Game {
         document.querySelector('.moves span').textContent = this.moveCount;
     }
     win() {
-        console.log('You win');
         this.isWin = true;
         this.board[4 * 4 - 2].element.classList.remove('cell--can-move');
         this.board[4 * 3 - 1].element.classList.remove('cell--can-move');
@@ -219,6 +191,7 @@ class Game {
             localStorage.setItem('bestResult', this.moveCount);
         }
         document.querySelector('.best-result span').textContent = localStorage.getItem('bestResult');
+        if (this.moveCount < bestResult) sumbitRecordResult(this.moveCount);
         document.querySelector('.board').innerHTML = '';
         let a = createElement('div', {
             className: 'game'

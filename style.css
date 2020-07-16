@@ -1,15 +1,94 @@
+.container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.controls {
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    width: 30vw;
+    min-width: 300px;
+    margin-bottom: 10px;
+}
+
+.controls button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    padding: 5px 5px;
+    cursor: pointer;
+    background: rgb(235, 239, 245);
+    border: 2px solid steelblue;
+    color: rgb(32, 86, 129);
+    font-size: 1em;
+    border-radius: 3px;
+    width: 50%;
+    box-sizing: border-box;
+    margin: 2px;
+}
+
+.controls button:first-of-type {
+    margin-left: 0;
+}
+
+.controls button:last-of-type {
+    margin-right: 0;
+}
+
+.controls button:hover {
+    transform: translateY(-1px);
+    box-shadow: 1px 1px 0 1px rgba(172, 172, 172, 0.404);
+}
+
+.controls button:disabled {
+    cursor: not-allowed;
+    background: rgb(231, 231, 231);
+    color: gray;
+    border: 2px solid gray;
+    box-shadow: none;
+    transform: translateY(0);
+}
+
+.game {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    transition: font-size .1s linear;
+    box-sizing: border-box;
+    font-weight: 300;
+}
+
+.game:hover {
+    font-size: 1.2em;
+}
+
+h1,
+.game-stats {
+    text-align: center;
+    margin: 15px auto;
+    font-weight: 300;
+}
+
+.game-stats {
+    font-size: 1.1em;
+}
+
 .board {
     display: block;
     position: relative;
     width: 30vw;
+    height: 30vw;
     min-width: 300px;
     min-height: 300px;
-    height: 30vw;
     margin: 10px auto;
     border: 2px solid steelblue;
     background: rgb(235, 239, 245);
     box-sizing: border-box;
     border-radius: 5px;
+    font-size: 40px;
+    color: rgb(32, 86, 129);
 }
 
 .cell {
@@ -24,22 +103,18 @@
     box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.2);
     margin: 2px;
     background: white;
-    font-size: 40px;
-    color: rgb(32, 86, 129);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-weight: 300;
     border-radius: 5px;
-    transition: all .2s ease-in;
+    transition: all .1s ease-in;
 }
 
 .cell--can-move {
-    background-color: lightsteelblue;
+    /* background-color: rgb(217, 229, 245); */
     cursor: pointer;
-    color: white;
 }
 
 .cell--can-move:hover {
-    background-color: rgb(168, 188, 214);
+    background-color: rgb(193, 210, 231);
 }
 
 .contacts-links {

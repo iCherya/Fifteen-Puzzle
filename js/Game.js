@@ -2,8 +2,8 @@ class Game {
     static START_BOARD = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 'empty'];
     constructor(props) {
         const {
-            board = Game.createRandomBoard(),
-                container
+            board,
+            container
         } = props;
 
         this.board = {};
@@ -11,19 +11,41 @@ class Game {
         this.container = container;
         this.container.classList.add('board');
         this.move = this.move.bind(this);
-
+        this.moveCount = 0;
         this.init(board);
 
         document.addEventListener('keyup', this.keyUp.bind(this));
     }
-    static canBoardWin(board) {
-        let N = Math.ceil(board.findIndex(cell => cell === 'empty') / 4);
-        for (let i = 0; i < 15; i++) {
-            if (board[i] !== 'empty') {
-                N += board.filter((number, index) => number !== 'empty' && index < i && number < board[i]).length;
+    static canBoardWin(array) {
+        let parity = 0;
+        let gridWidth = Math.sqrt(array.length);
+        let row = 0;
+        let blankRow = 0;
+
+        for (let i = 0; i < array.length; i++) {
+            if (i % gridWidth == 0) {
+                row++;
+            }
+            if (array[i] == 'empty') {
+                blankRow = row;
+                continue;
+            }
+            for (let j = i + 1; j < array.length; j++) {
+                if (array[i] > array[j] && array[j] != 'empty') {
+                    parity++;
+                }
             }
         }
-        return N % 2 != 0;
+
+        if (gridWidth % 2 == 0) {
+            if (blankRow % 2 == 0) {
+                return parity % 2 == 0;
+            } else {
+                return parity % 2 != 0;
+            }
+        } else {
+            return parity % 2 == 0;
+        }
     }
     static rotateBoard(board) {
         const size = Math.sqrt(board.length);
@@ -49,13 +71,13 @@ class Game {
         let randomBoard = Game.START_BOARD
             .concat()
             .sort(() => Math.random() - 0.5);
+
         if (Game.canBoardWin(randomBoard)) {
             return Game.convertArrayToBoard(randomBoard);
         } else {
             randomBoard = Game.rotateBoard(randomBoard);
             return Game.convertArrayToBoard(randomBoard);
         }
-
     }
     checkWin() {
         return Game.START_BOARD
@@ -168,6 +190,7 @@ class Game {
             this.board[moveData.to] = cell;
             this.board[moveData.from] = 'empty';
         }
+        this.moveCount++;
         this.render();
 
         if (this.checkWin()) {
@@ -185,11 +208,22 @@ class Game {
                 })
             }
         }
+        document.querySelector('.moves span').textContent = this.moveCount;
     }
     win() {
         console.log('You win');
         this.isWin = true;
         this.board[4 * 4 - 2].element.classList.remove('cell--can-move');
         this.board[4 * 3 - 1].element.classList.remove('cell--can-move');
+        if (!localStorage.getItem('bestResult') || this.moveCount < +localStorage.getItem('bestResult')) {
+            localStorage.setItem('bestResult', this.moveCount);
+        }
+        document.querySelector('.best-result span').textContent = localStorage.getItem('bestResult');
+        document.querySelector('.board').innerHTML = '';
+        let a = createElement('div', {
+            className: 'game'
+        }, `You win! ${'\n'}Moves: ${this.moveCount}${'\n\n'} Play again?`);
+        render(a, document.querySelector('.board'));
+        document.querySelector('.game').onclick = startGame;
     }
 }

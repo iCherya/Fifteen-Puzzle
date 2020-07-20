@@ -1,30 +1,47 @@
 class Game {
-    constructor(props) {
-        this.START_BOARD = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 'empty'];
-        const {
-            board = this.createRandomBoard(),
-                container
-        } = props;
-
-        this.board = {};
+    constructor(gameLevel) {
+        this.container = document.querySelector('.board');
+        this.gameLevel = gameLevel;
+        this.START_BOARD_ARR = Game.generateStartBoard(gameLevel);
         this.isWin = false;
-        this.container = container;
+        this.board = this.createRandomBoard();
         this.container.classList.add('board');
         this.move = this.move.bind(this);
         this.moveCount = 0;
 
-        this.init(board);
+        this.init(this.board);
 
-        const swipes = new Hammer(container);
+        const swipes = new Hammer(this.container);
         swipes.get('swipe').set({
             direction: Hammer.DIRECTION_ALL
         });
         swipes.on("swipeleft swiperight swipeup swipedown", this.moveControls.bind(this));
         document.addEventListener('keyup', this.moveControls.bind(this));
     }
-    static canBoardWin(array) {
+    static generateStartBoard(gameLevel) {
+        let startBoardArr = [];
+
+        for (let i = 1; i < gameLevel ** 2; i++) {
+            startBoardArr.push(i);
+        }
+        startBoardArr.push('empty');
+
+        return startBoardArr;
+    }
+    canBoardWin(array) {
+
+        // Check if Start board is the same after ramdomize
+        let startBoardPosition = array.every((el, idx) => {
+            return el === this.START_BOARD_ARR[idx]
+        });
+
+        if (startBoardPosition) return false;
+
+        // Check can board win
         let parity = 0;
+
         let gridWidth = Math.sqrt(array.length);
+
         let row = 0;
         let blankRow = 0;
 
@@ -60,23 +77,23 @@ class Game {
         }, {});
     }
     createRandomBoard() {
-        let randomBoard = this.START_BOARD
+        let randomBoard = this.START_BOARD_ARR
             .concat()
             .sort(() => Math.random() - 0.5);
 
-        if (Game.canBoardWin(randomBoard)) {
-            return Game.convertArrayToBoard(randomBoard);
-        } else {
-            randomBoard = rotateArray(randomBoard);
+
+        if (this.canBoardWin(randomBoard)) {
             return Game.convertArrayToBoard(randomBoard);
         }
+
+        return this.createRandomBoard();;
     }
     checkWin() {
-        return this.START_BOARD
+        return this.START_BOARD_ARR
             .every((number, index) => this.board[index] !== 'empty' ? this.board[index].props.number === number : this.board[index] === number);
     }
     getIndex(number) {
-        for (let index = 0; index < 16; index++) {
+        for (let index = 0; index < this.gameLevel ** 2; index++) {
             if (this.board[index] === 'empty') {
                 if (number === 'empty') {
                     return index;
@@ -103,15 +120,15 @@ class Game {
     }
     getPosition(index) {
         return {
-            row: Math.floor(index / 4),
-            cell: index % 4,
+            row: Math.floor(index / this.gameLevel),
+            cell: index % this.gameLevel,
         }
     }
     getSiblingsIndex(currentIndex) {
-        const leftItemIndex = currentIndex % 4 === 0 ? null : currentIndex - 1,
-            rightItemIndex = currentIndex % 4 === 3 ? null : currentIndex + 1,
-            topItemIndex = currentIndex < 4 ? null : currentIndex - 4,
-            bottomItemIndex = currentIndex > 11 ? null : currentIndex + 4;
+        const leftItemIndex = currentIndex % this.gameLevel === 0 ? null : currentIndex - 1,
+            rightItemIndex = currentIndex % this.gameLevel === this.gameLevel - 1 ? null : currentIndex + 1,
+            topItemIndex = currentIndex < this.gameLevel ? null : currentIndex - this.gameLevel,
+            bottomItemIndex = currentIndex > this.gameLevel * (this.gameLevel - 1) - 1 ? null : currentIndex + this.gameLevel;
         return {
             LEFT: leftItemIndex,
             RIGHT: rightItemIndex,
@@ -122,14 +139,14 @@ class Game {
     init(board) {
         const cells = [];
 
-        for (let i = 0; i <= 15; i++) {
+        for (let i = 0; i <= this.gameLevel ** 2 - 1; i++) {
             const number = board[i];
 
             if (number !== 'empty') {
                 const cell = new Cell({
                     number,
                     onMove: this.move,
-                });
+                }, this.container, this.gameLevel);
 
                 this.board[i] = cell;
                 cells.push(cell.element);
@@ -171,13 +188,13 @@ class Game {
         }
     }
     render() {
-        for (let i = 0; i <= 15; i++) {
-            const cell = this.board[i];
+        for (let i = 0; i <= this.gameLevel ** 2 - 1; i++) {
+            const Cell = this.board[i];
 
-            if (cell !== 'empty') {
-                cell.changeProps({
-                    canMove: !!this.getMoveData(cell.props.number),
-                    position: this.getPosition(i)
+            if (Cell !== 'empty') {
+                Cell.changeProps({
+                    canMove: !!this.getMoveData(Cell.props.number),
+                    position: this.getPosition(i),
                 })
             }
         }
@@ -185,17 +202,33 @@ class Game {
     }
     win() {
         this.isWin = true;
-        this.board[4 * 4 - 2].element.classList.remove('cell--can-move');
-        this.board[4 * 3 - 1].element.classList.remove('cell--can-move');
-        if (!localStorage.getItem('bestResult') || this.moveCount < +localStorage.getItem('bestResult')) {
-            localStorage.setItem('bestResult', this.moveCount);
-        }
+        this.board[this.gameLevel * this.gameLevel - 2].element.classList.remove('cell--can-move');
+        this.board[this.gameLevel * (this.gameLevel - 1) - 1].element.classList.remove('cell--can-move');
+
+        // if (!localStorage.getItem('bestResult') || this.moveCount < +localStorage.getItem('bestResult')) {
+        //     localStorage.setItem('bestResult', this.moveCount);
+        // }
+
+
+        /// Stopped here
+        localStorage.setItem('localResultTable', JSON.stringify(
+            this.gameLevel = this.gameLevel, {
+                'levelBoard': `${this.gameLevel}x${this.gameLevel}`,
+                'count': this.moveCount,
+            }
+        ));
+
+
         document.querySelector('.best-result span').textContent = localStorage.getItem('bestResult');
-        if (this.moveCount < bestResult) sumbitRecordResult(this.moveCount);
+
+        // if (this.moveCount < bestResult) sumbitRecordResult(this.moveCount);
+
+        // Restart game
         document.querySelector('.board').innerHTML = '';
         let a = createElement('div', {
             className: 'game'
         }, `You win! ${'\n'}Moves: ${this.moveCount}${'\n\n'} Play again?`);
+
         render(a, document.querySelector('.board'));
         document.querySelector('.game').onclick = startGame;
     }

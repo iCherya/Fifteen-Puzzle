@@ -4,14 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" href="./img/icon/favicon-32.png" sizes="32x32">
+    <link rel="icon" href="./img/icon/favicon-57.png" sizes="57x57">
+    <link rel="icon" href="./img/icon/favicon-76.png" sizes="76x76">
+    <link rel="icon" href="./img/icon/favicon-96.png" sizes="96x96">
+    <link rel="icon" href="./img/icon/favicon-128.png" sizes="128x128">
+    <link rel="icon" href="./img/icon/favicon-192.png" sizes="192x192">
+    <link rel="icon" href="./img/icon/favicon-228.png" sizes="228x228">
+    <link rel="shortcut icon" href="./img/icon/favicon-196.png" sizes="196x196">
+    <link rel="apple-touch-icon" href="./img/icon/favicon-120.png" sizes="120x120">
+    <link rel="apple-touch-icon" href="./img/icon/favicon-152.png" sizes="152x152">
+    <link rel="apple-touch-icon" href="./img/icon/favicon-180.png" sizes="180x180">
+    <meta name="msapplication-TileColor" content="#4682b4">
+    <meta name="msapplication-TileImage" content="./img/icon/favicon-144.png">
+    <meta name="msapplication-config" content="./img/icon/browserconfig.xml" />
+
     <title>15 puzzle</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./style.css">
     <script src="./js/lib.js" defer></script>
     <script src="https://hammerjs.github.io/dist/hammer.js" defer></script>
     <script src="./js/Game.js" defer></script>
     <script src="./js/Cell.js" defer></script>
     <script src="./js/index.js" defer></script>
-
 </head>
 
 <body>
@@ -28,8 +43,16 @@
         <div class="game-stats">
             <div class="moves">Moves: <span>0</span></div>
 
-            <div class="best-result">Your best result: <span>0</span></div>
-            <div class="top-result">All-time best result: <span>0</span></div>
+            <div class="best-result">
+                <span class="best-result__level">[3x3]</span>
+                Your best result:
+                <span class="best-result__value">0</span>
+            </div>
+            <!-- <div class="top-result">
+                <span class="top-result__level">[3x3]</span>
+                All-time best result:
+                <span class="top-result__value">0</span>
+            </div> -->
         </div>
 
     </div>

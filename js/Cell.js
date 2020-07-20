@@ -1,7 +1,8 @@
 class Cell {
-    constructor(props) {
+    constructor(props, container, gameLevel) {
         this.props = props;
-        this.createElement();
+        this.gameLevel = gameLevel;
+        this.createElement(container, gameLevel);
         this.render();
     }
     changeProps(newProps) {
@@ -16,11 +17,19 @@ class Cell {
             this.props.onMove(this);
         }
     }
-    createElement() {
+    createElement(container, gameLevel) {
+        let containerWidth = container.offsetWidth;
+        let cellWidth = (containerWidth - gameLevel) / gameLevel - 4;
+
         this.element = createElement('div', {
             className: 'cell',
         }, this.props.number);
         this.element.addEventListener('click', this.clickHandler.bind(this));
+
+        this.element.style.width = `${cellWidth}px`;
+        this.element.style.height = `${cellWidth}px`;
+        this.element.style.fontSize = `${cellWidth*0.7}px`;
+
     }
     render() {
         if (this.props.canMove) {
@@ -29,8 +38,8 @@ class Cell {
             this.element.classList.remove('cell--can-move');
         }
         if (this.props.position) {
-            this.element.style.left = this.props.position.cell * 25 + '%';
-            this.element.style.top = this.props.position.row * 25 + '%';
+            this.element.style.left = this.props.position.cell * (100 / this.gameLevel) + '%';
+            this.element.style.top = this.props.position.row * (100 / this.gameLevel) + '%';
         }
 
     }

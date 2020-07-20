@@ -96,8 +96,8 @@ h1,
     display: flex;
     align-items: center;
     justify-content: center;
-    width: calc(25% - 4px);
-    height: calc(25% - 4px);
+    /* width: calc(25% - 4px);
+    height: calc(25% - 4px); */
     box-sizing: border-box;
     border: 1px solid steelblue;
     box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.2);

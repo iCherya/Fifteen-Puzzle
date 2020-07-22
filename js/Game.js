@@ -1,16 +1,18 @@
 class Game {
-    constructor(gameLevel) {
+    constructor(gameLevel, localResultTable) {
         this.container = document.querySelector('.board');
         this.gameLevel = gameLevel;
         this.START_BOARD_ARR = Game.generateStartBoard(gameLevel);
         this.isWin = false;
+        this.localResultTable = localResultTable;
         this.board = this.createRandomBoard();
-        this.container.classList.add('board');
         this.move = this.move.bind(this);
         this.moveCount = 0;
-
         this.init(this.board);
 
+        this.renderResultsTable(this.localResultTable);
+
+        document.querySelector('.game-stats').classList.remove('hidden');
         const swipes = new Hammer(this.container);
         swipes.get('swipe').set({
             direction: Hammer.DIRECTION_ALL
@@ -200,36 +202,72 @@ class Game {
         }
         document.querySelector('.moves span').textContent = this.moveCount;
     }
+    renderResultsTable(resultsArray) {
+        document.querySelector('.best-result__level').textContent = `${this.gameLevel}x${this.gameLevel}`;
+        document.querySelector('.best-result__value').textContent = resultsArray[this.gameLevel].bestScore || 'Not solved yet'
+    }
     win() {
         this.isWin = true;
-        this.board[this.gameLevel * this.gameLevel - 2].element.classList.remove('cell--can-move');
-        this.board[this.gameLevel * (this.gameLevel - 1) - 1].element.classList.remove('cell--can-move');
+        // this.board[this.gameLevel * this.gameLevel - 2].element.classList.remove('cell--can-move');
+        // this.board[this.gameLevel * (this.gameLevel - 1) - 1].element.classList.remove('cell--can-move');
 
-        // if (!localStorage.getItem('bestResult') || this.moveCount < +localStorage.getItem('bestResult')) {
-        //     localStorage.setItem('bestResult', this.moveCount);
-        // }
+        localResultTable = this.localResultTable;
 
+        localResultTable[`${this.gameLevel + 1}`].isAccessible = true;
 
-        /// Stopped here
-        localStorage.setItem('localResultTable', JSON.stringify(
-            this.gameLevel = this.gameLevel, {
-                'levelBoard': `${this.gameLevel}x${this.gameLevel}`,
-                'count': this.moveCount,
-            }
-        ));
+        if (!localResultTable[this.gameLevel].bestScore || this.moveCount < localResultTable[this.gameLevel].bestScore) {
+            localResultTable[this.gameLevel].bestScore = this.moveCount;
+            this.renderResultsTable(localResultTable);
+        }
 
-
-        document.querySelector('.best-result span').textContent = localStorage.getItem('bestResult');
-
-        // if (this.moveCount < bestResult) sumbitRecordResult(this.moveCount);
+        localStorage.setItem('localResultTable', JSON.stringify(localResultTable));
 
         // Restart game
-        document.querySelector('.board').innerHTML = '';
-        let a = createElement('div', {
-            className: 'game'
-        }, `You win! ${'\n'}Moves: ${this.moveCount}${'\n\n'} Play again?`);
 
-        render(a, document.querySelector('.board'));
-        document.querySelector('.game').onclick = startGame;
+        this.container.innerHTML = '';
+        const newGame = createElement('div', {
+            className: 'game',
+            children: [
+                createElement('div', {}, `Solved!\nYour result: ${this.moveCount}`),
+                createElement('div', {
+                    className: 'game-controls',
+                    children: [
+                        createElement('div', {
+                            className: 'game-controls__all'
+                        }, 'Choose level'),
+                        createElement('div', {
+                            className: 'game-controls__retry'
+                        }, 'Retry again'),
+                    ]
+                })
+            ]
+        })
+
+        newGame.lastChild.children[0].addEventListener('click', () => {
+            renderGameLevels(localResultTable, document.querySelector('.board'));
+            document.querySelector('.game-stats').classList.add('hidden');
+        });
+        newGame.lastChild.children[1].addEventListener('click', () => {
+            startGame({
+                level: this.gameLevel,
+                localResultTable
+            })
+        });
+        if (!(this.gameLevel === 9)) {
+            let nextLevelEl = createElement('div', {
+                className: 'game-controls__next'
+            }, 'Next level')
+            nextLevelEl.addEventListener('click', () => {
+                startGame({
+                    level: this.gameLevel + 1,
+                    localResultTable
+                })
+            })
+            newGame.lastChild.append(nextLevelEl);
+
+        }
+        render(newGame, this.container);
+        console.dir(newGame);
+        // renderGameLevels(localResultTable, this.container);
     }
 }

@@ -1,12 +1,66 @@
-const resultTable = localStorage.getItem('localResultTable') || {};
+let localResultTable = JSON.parse(localStorage.getItem('localResultTable')) || {
+    '2': {
+        isAccessible: true,
+    },
+    '3': {
+        isAccessible: false,
+    },
+    '4': {
+        isAccessible: false,
+    },
+    '5': {
+        isAccessible: false,
+    },
+    '6': {
+        isAccessible: false,
+    },
+    '7': {
+        isAccessible: false,
+    },
+    '8': {
+        isAccessible: false,
+    },
+    '9': {
+        isAccessible: false,
+    },
+};
 
-document.querySelector('.best-result span').textContent = localStorage.getItem('bestResult') || 0;
-document.querySelector('.game').addEventListener('mouseup', startGame);
+function renderGameLevels(levelsObject, board) {
+    board.innerHTML = '';
+    let levelClassName = '';
+    for (let key in levelsObject) {
+        if (levelsObject[key].isAccessible) {
+            levelClassName = 'level__enabled';
+        } else {
+            levelClassName = 'level__disabled';
+        }
 
-function startGame() {
-    const game = new Game(3);
+        let levelEl = createElement('div', {
+            className: levelClassName + ' level',
+        }, `${key}x${key}`);
+        levelEl.setAttribute('data-level', key);
+
+        board.append(levelEl);
+    }
+    document.querySelectorAll('.level__enabled').forEach(el => {
+        el.addEventListener('click', () => startGame({
+            level: +el.getAttribute('data-level'),
+            localResultTable,
+        }));
+    });
+}
+
+renderGameLevels(localResultTable, document.querySelector('.board'));
+
+function startGame(props) {
+    const {
+        level,
+        localResultTable
+    } = props;
+    const game = new Game(level, localResultTable);
     game.render();
 }
+
 
 function showHideInstructions() {
     document.querySelector('.instructions-info').classList.toggle('hidden');

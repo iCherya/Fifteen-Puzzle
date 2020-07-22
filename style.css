@@ -50,20 +50,60 @@ body {
 
 .game {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: space-around;
     align-items: center;
     text-align: center;
-    cursor: pointer;
     width: 100%;
     height: 100%;
-    transition: font-size .1s linear;
+    font-size: 0.8em;
+    /* transition: font-size .1s linear; */
     box-sizing: border-box;
 }
 
+.game-controls {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    font-size: 0.7em;
+}
+
+.game-controls div {
+    cursor: pointer;
+    border: 1px solid steelblue;
+    border-radius: 10px;
+    background: white;
+    flex: 0 0 30%;
+}
+
+.game-controls div:hover {
+    transform: translateY(-2px);
+}
+
+.game-controls :after {
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 3em;
+    display: block;
+}
+
+.game-controls__retry:after {
+    content: "↺";
+}
+
+.game-controls__next:after {
+    content: "▶";
+}
+
+.game-controls__all:after {
+    content: "✸";
+}
+
+/* 
 
 .game:hover {
     font-size: 1.2em;
-}
+} */
 
 h1,
 .game-stats {
@@ -76,7 +116,8 @@ h1,
 }
 
 .board {
-    display: block;
+    display: flex;
+    flex-wrap: wrap;
     position: relative;
     width: 30vw;
     height: 30vw;
@@ -91,20 +132,23 @@ h1,
     color: rgb(32, 86, 129);
 }
 
-.cell {
-    position: absolute;
+.cell,
+.level {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* width: calc(25% - 4px);
-    height: calc(25% - 4px); */
     box-sizing: border-box;
     border: 1px solid steelblue;
     box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.2);
     margin: 2px;
-    background: white;
     border-radius: 5px;
     transition: all .1s ease-in;
+    cursor: pointer;
+}
+
+.cell {
+    position: absolute;
+    background: white;
 }
 
 .cell--can-move {
@@ -114,6 +158,24 @@ h1,
 
 .cell--can-move:hover {
     background-color: rgb(240, 240, 240);
+}
+
+.level {
+    width: calc(100%/3 - 4px);
+    height: calc(100%/3 - 4px);
+}
+
+.level__enabled {
+    background: steelblue;
+    color: white;
+    cursor: pointer;
+}
+
+.level__disabled {
+    background: rgb(231, 231, 231);
+    color: gray;
+    border: 2px solid gray;
+    cursor: not-allowed;
 }
 
 .contacts-links {

@@ -20,7 +20,7 @@
     <meta name="msapplication-TileImage" content="./img/icon/favicon-144.png">
     <meta name="msapplication-config" content="./img/icon/browserconfig.xml" />
 
-    <title>15 puzzle</title>
+    <title>Sliding Puzzle Game</title>
     <link rel="stylesheet" href="./style.css">
     <script src="./js/lib.js" defer></script>
     <script src="https://hammerjs.github.io/dist/hammer.js" defer></script>
@@ -30,22 +30,19 @@
 </head>
 
 <body>
-
     <div class="container">
-        <h1>15 Puzzle Game</h1>
+        <h1>Sliding Puzzle Game</h1>
         <div class="controls">
             <button id="instructions" title="Instructions">Instructions</button>
             <button disabled title="Can not solve for now">Solve</button>
         </div>
         <div class="board">
-            <div class="game"><span>Play</span></div>
         </div>
-        <div class="game-stats">
+        <div class="game-stats hidden">
             <div class="moves">Moves: <span>0</span></div>
-
             <div class="best-result">
-                <span class="best-result__level">[3x3]</span>
-                Your best result:
+                <span class="best-result__level">3x3</span>
+                | Your best result:
                 <span class="best-result__value">0</span>
             </div>
             <!-- <div class="top-result">

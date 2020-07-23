@@ -5,7 +5,8 @@ The **"15-puzzle"** game (also called Gem Puzzle, Boss Puzzle, Game of Fifteen, 
 - [x] 4x4 Puzzle
 - [x] NxN Puzzle
 - [x] Game scores from localStorage
-- [ ] Game scores from server
+- [x] Game scores from server
+- [ ] Solving algorytm implementation
 - [ ] Refactoring
 
 

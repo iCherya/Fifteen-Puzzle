@@ -1,16 +1,16 @@
 class Game {
-    constructor(gameLevel, localResultTable) {
+    constructor(gameLevel, localGameDataObject) {
         this.container = document.querySelector('.board');
         this.gameLevel = gameLevel;
         this.START_BOARD_ARR = Game.generateStartBoard(gameLevel);
         this.isWin = false;
-        this.localResultTable = localResultTable;
+        this.localGameData = localGameDataObject;
         this.board = this.createRandomBoard();
         this.move = this.move.bind(this);
         this.moveCount = 0;
         this.init(this.board);
 
-        this.renderResultsTable(this.localResultTable);
+        this.renderResultsTable(this.localGameData);
 
         document.querySelector('.game-stats').classList.remove('hidden');
         const swipes = new Hammer(this.container);
@@ -19,6 +19,12 @@ class Game {
         });
         swipes.on("swipeleft swiperight swipeup swipedown", this.moveControls.bind(this));
         document.addEventListener('keyup', this.moveControls.bind(this));
+    }
+    static convertArrayToBoard(boardArray) {
+        return boardArray.reduce((board, cell, idx) => {
+            board[idx] = cell;
+            return board;
+        }, {});
     }
     static generateStartBoard(gameLevel) {
         let startBoardArr = [];
@@ -31,7 +37,6 @@ class Game {
         return startBoardArr;
     }
     canBoardWin(array) {
-
         // Check if Start board is the same after ramdomize
         let startBoardPosition = array.every((el, idx) => {
             return el === this.START_BOARD_ARR[idx]
@@ -72,11 +77,9 @@ class Game {
             return parity % 2 == 0;
         }
     }
-    static convertArrayToBoard(boardArray) {
-        return boardArray.reduce((board, cell, idx) => {
-            board[idx] = cell;
-            return board;
-        }, {});
+    checkWin() {
+        return this.START_BOARD_ARR
+            .every((number, index) => this.board[index] !== 'empty' ? this.board[index].props.number === number : this.board[index] === number);
     }
     createRandomBoard() {
         let randomBoard = this.START_BOARD_ARR
@@ -89,10 +92,6 @@ class Game {
         }
 
         return this.createRandomBoard();;
-    }
-    checkWin() {
-        return this.START_BOARD_ARR
-            .every((number, index) => this.board[index] !== 'empty' ? this.board[index].props.number === number : this.board[index] === number);
     }
     getIndex(number) {
         for (let index = 0; index < this.gameLevel ** 2; index++) {
@@ -200,74 +199,141 @@ class Game {
                 })
             }
         }
-        document.querySelector('.moves span').textContent = this.moveCount;
+        document.querySelector('.game-stats__moves--value').textContent = this.moveCount;
     }
-    renderResultsTable(resultsArray) {
-        document.querySelector('.best-result__level').textContent = `${this.gameLevel}x${this.gameLevel}`;
-        document.querySelector('.best-result__value').textContent = resultsArray[this.gameLevel].bestScore || 'Not solved yet'
+    renderResultsTable(resultsObject) {
+        document.querySelector('.game-stats__local--level').textContent = `${this.gameLevel}x${this.gameLevel}`;
+        document.querySelector('.game-stats__local--value').textContent = resultsObject[this.gameLevel].bestScore || '-';
+        // document.querySelector('.game-stats__global--level').textContent = `${this.gameLevel}x${this.gameLevel}`;
+    }
+    sumbitGlobalScoreData(playerName) {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+        var urlencoded = new URLSearchParams();
+        urlencoded.append("id", this.gameLevel - 1);
+        urlencoded.append("level", this.gameLevel);
+        urlencoded.append("score", this.moveCount);
+        urlencoded.append("name", playerName);
+
+        var requestOptions = {
+            method: 'PUT',
+            headers: myHeaders,
+            body: urlencoded,
+            redirect: 'follow'
+        };
+
+        fetch(`https://5f103a9700d4ab00161349f0.mockapi.io/scores/${this.gameLevel - 1}/`, requestOptions)
+            .then(response => response.json())
+            .then(response => {
+                document.querySelector('.game-stats__global--value').textContent = response.score;
+                document.querySelector('.game-stats__global--name').textContent = response.name;
+            })
+            .catch(error => console.log('error', error));
+
     }
     win() {
+        this.board[this.gameLevel * this.gameLevel - 2].element.classList.remove('cell--can-move');
+        this.board[this.gameLevel * (this.gameLevel - 1) - 1].element.classList.remove('cell--can-move');
+
         this.isWin = true;
-        // this.board[this.gameLevel * this.gameLevel - 2].element.classList.remove('cell--can-move');
-        // this.board[this.gameLevel * (this.gameLevel - 1) - 1].element.classList.remove('cell--can-move');
 
-        localResultTable = this.localResultTable;
 
-        localResultTable[`${this.gameLevel + 1}`].isAccessible = true;
 
-        if (!localResultTable[this.gameLevel].bestScore || this.moveCount < localResultTable[this.gameLevel].bestScore) {
-            localResultTable[this.gameLevel].bestScore = this.moveCount;
-            this.renderResultsTable(localResultTable);
+
+
+        if (this.gameLevel !== 9) {
+            this.localGameData[`${this.gameLevel + 1}`].isAccessible = true;
+        }
+        if (!this.localGameData[this.gameLevel].bestScore || this.moveCount < this.localGameData[this.gameLevel].bestScore) {
+            this.localGameData[this.gameLevel].bestScore = this.moveCount;
+            this.renderResultsTable(this.localGameData);
         }
 
-        localStorage.setItem('localResultTable', JSON.stringify(localResultTable));
 
-        // Restart game
+        localStorage.setItem('localGameData', JSON.stringify(this.localGameData));
+
 
         this.container.innerHTML = '';
         const newGame = createElement('div', {
-            className: 'game',
+            className: 'win',
             children: [
                 createElement('div', {}, `Solved!\nYour result: ${this.moveCount}`),
                 createElement('div', {
-                    className: 'game-controls',
+                    className: 'win-controls',
                     children: [
                         createElement('div', {
-                            className: 'game-controls__all'
+                            className: 'win-controls__all'
                         }, 'Choose level'),
                         createElement('div', {
-                            className: 'game-controls__retry'
+                            className: 'win-controls__retry'
                         }, 'Retry again'),
                     ]
                 })
             ]
         })
-
         newGame.lastChild.children[0].addEventListener('click', () => {
-            renderGameLevels(localResultTable, document.querySelector('.board'));
+            renderGameLevels(this.localGameData, document.querySelector('.board'));
             document.querySelector('.game-stats').classList.add('hidden');
         });
         newGame.lastChild.children[1].addEventListener('click', () => {
             startGame({
                 level: this.gameLevel,
-                localResultTable
+                localGameDataObject: this.localGameData,
             })
         });
         if (!(this.gameLevel === 9)) {
             let nextLevelEl = createElement('div', {
-                className: 'game-controls__next'
+                className: 'win-controls__next'
             }, 'Next level')
             nextLevelEl.addEventListener('click', () => {
                 startGame({
                     level: this.gameLevel + 1,
-                    localResultTable
+                    localGameDataObject: this.localGameData,
                 })
             })
             newGame.lastChild.append(nextLevelEl);
-
         }
         render(newGame, this.container);
-        console.dir(newGame);
-        // renderGameLevels(localResultTable, this.container);
+        let globalScoreElValue = document.querySelector('.game-stats__global--value').textContent;
+        if (this.moveCount < +globalScoreElValue || globalScoreElValue === "-") {
+            let playerName = 'Unknown Hero';
+            const submitResultEl = createElement('div', {
+                className: 'submit-result',
+                children: [
+                    createElement('div', {
+                        className: 'close',
+                    }),
+                    createElement('div', {}, 'New Record!'),
+                    createElement('input', {
+                        type: 'text',
+                        placeholder: "What's your name, champ?"
+                    }),
+                    createElement('input', {
+                        type: 'button',
+                        value: "Submit"
+                    }),
+                ]
+            }, )
+
+            submitResultEl.children[0].onclick = () => {
+                submitResultEl.style.display = 'none';
+                this.sumbitGlobalScoreData(playerName);
+            }
+            submitResultEl.children[3].onclick = () => {
+                if (submitResultEl.children[2].value.length > 0) {
+                    playerName = submitResultEl.children[2].value
+                }
+                submitResultEl.style.display = 'none';
+                this.sumbitGlobalScoreData(playerName);
+            }
+            submitResultEl.children[2].addEventListener('keyup', function (event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    submitResultEl.children[3].click();
+                }
+            });
+            document.body.append(submitResultEl);
+        }
     }
 }

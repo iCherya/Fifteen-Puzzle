@@ -31,6 +31,11 @@
 
 <body>
     <div class="container">
+        <!-- <div class="submit-result">
+            <div class="close"></div>
+            <input type="text" placeholder="What's your name, champ?">
+            <input type="button" value="Submit">
+        </div> -->
         <h1>Sliding Puzzle Game</h1>
         <div class="controls">
             <button id="instructions" title="Instructions">Instructions</button>
@@ -39,19 +44,21 @@
         <div class="board">
         </div>
         <div class="game-stats hidden">
-            <div class="moves">Moves: <span>0</span></div>
-            <div class="best-result">
-                <span class="best-result__level">3x3</span>
-                | Your best result:
-                <span class="best-result__value">0</span>
+            <div class="game-stats__moves">
+                Moves:
+                <span class="game-stats__moves--value">0</span>
             </div>
-            <!-- <div class="top-result">
-                <span class="top-result__level">[3x3]</span>
-                All-time best result:
-                <span class="top-result__value">0</span>
-            </div> -->
+            <div class="game-stats__local">
+                <span class="game-stats__local--level">3x3</span> | Your best result: <span
+                    class="game-stats__local--value">-</span>
+            </div>
+            <div class="game-stats__global">
+                <!-- <span class="game-stats__global--level">3x3</span> -->
+                Global best result:
+                <span class="game-stats__global--value loading"></span> by <span
+                    class="game-stats__global--name loading"></span>
+            </div>
         </div>
-
     </div>
     <div class="contacts-links">
         <a href="https://github.com/iCherya/Fifteen-Puzzle" target="_blank">
@@ -75,10 +82,12 @@
         </a>
     </div>
     <div class="instructions-info hidden">
-        <div class="instructions-info__close"></div>
+        <div class="close"></div>
         <h2>Instructions</h2>
-        <p>Move tiles in grid to order them from 1 to 15. To move a tile you can click on
-            it, use your arrow keys or swipe on mobile screen. The resulting order should be like:</p>
+        <p>Starting at the top left corner, move the tiles in ascending order in the grid. The tile in the lower right
+            corner should remain "empty". To move a tile you can click on it, use your arrow keys or swipe on mobile
+            screen.
+            The resulting order should be like:</p>
         <div><img src="./img/300px-15-puzzle.jpg" alt="15 Puzzle Game"></div>
     </div>
 

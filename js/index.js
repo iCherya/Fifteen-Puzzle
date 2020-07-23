@@ -1,35 +1,39 @@
-let localResultTable = JSON.parse(localStorage.getItem('localResultTable')) || {
-    '2': {
-        isAccessible: true,
-    },
-    '3': {
-        isAccessible: false,
-    },
-    '4': {
-        isAccessible: false,
-    },
-    '5': {
-        isAccessible: false,
-    },
-    '6': {
-        isAccessible: false,
-    },
-    '7': {
-        isAccessible: false,
-    },
-    '8': {
-        isAccessible: false,
-    },
-    '9': {
-        isAccessible: false,
-    },
-};
+function getLocalGameData() {
+    return JSON.parse(localStorage.getItem('localGameData')) || {
+        '2': {
+            isAccessible: true,
+        },
+        '3': {
+            isAccessible: false,
+        },
+        '4': {
+            isAccessible: false,
+        },
+        '5': {
+            isAccessible: false,
+        },
+        '6': {
+            isAccessible: false,
+        },
+        '7': {
+            isAccessible: false,
+        },
+        '8': {
+            isAccessible: false,
+        },
+        '9': {
+            isAccessible: false,
+        },
+    }
+}
 
-function renderGameLevels(levelsObject, board) {
+const localGameData = getLocalGameData();
+
+function renderGameLevels(localGameDataObject, board) {
     board.innerHTML = '';
     let levelClassName = '';
-    for (let key in levelsObject) {
-        if (levelsObject[key].isAccessible) {
+    for (let key in localGameDataObject) {
+        if (localGameDataObject[key].isAccessible) {
             levelClassName = 'level__enabled';
         } else {
             levelClassName = 'level__disabled';
@@ -42,23 +46,41 @@ function renderGameLevels(levelsObject, board) {
 
         board.append(levelEl);
     }
-    document.querySelectorAll('.level__enabled').forEach(el => {
-        el.addEventListener('click', () => startGame({
-            level: +el.getAttribute('data-level'),
-            localResultTable,
+    document.querySelectorAll('.level__enabled').forEach(levelEl => {
+        levelEl.addEventListener('click', () => startGame({
+            level: +levelEl.getAttribute('data-level'),
+            localGameDataObject,
         }));
     });
 }
 
-renderGameLevels(localResultTable, document.querySelector('.board'));
+renderGameLevels(localGameData, document.querySelector('.board'));
 
 function startGame(props) {
     const {
         level,
-        localResultTable
+        localGameDataObject
     } = props;
-    const game = new Game(level, localResultTable);
+    const game = new Game(level, localGameDataObject);
     game.render();
+    getGlobalScoreData(level);
+}
+
+
+
+function getGlobalScoreData(level) {
+    fetch('https://5f103a9700d4ab00161349f0.mockapi.io/scores')
+        .then(response => response.json())
+        .then(data => {
+            const globalLevelData = data
+                .find(el => {
+                    return el.id == level - 1;
+                });
+            document.querySelector('.game-stats__global--value').textContent = globalLevelData.score;
+            document.querySelector('.game-stats__global--value').classList.remove('loading');
+            document.querySelector('.game-stats__global--name').textContent = globalLevelData.name;
+            document.querySelector('.game-stats__global--name').classList.remove('loading');
+        })
 }
 
 
@@ -68,45 +90,10 @@ function showHideInstructions() {
 }
 
 document.querySelector('#instructions').onclick = showHideInstructions;
-document.querySelector('.instructions-info__close').onclick = showHideInstructions;
+document.querySelector('.instructions-info .close').onclick = showHideInstructions;
+
 document.body.addEventListener('click', function (event) {
     if (event.target === document.querySelector('.container.innactive')) {
         showHideInstructions();
     }
 })
-
-
-
-
-// function showRecordResult() {
-//     if (arguments.length === 0) {
-//         fetch('https://5f103a9700d4ab00161349f0.mockapi.io/scores')
-//             .then(response => response.json())
-//             .then(response => {
-//                 bestResult = response[0].score;
-//                 document.querySelector('.top-result span').textContent = bestResult;
-//             })
-//     } else {
-//         document.querySelector('.top-result span').textContent = arguments[0];
-//     }
-// }
-
-// function sumbitRecordResult(number) {
-//     var myHeaders = new Headers();
-//     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
-
-//     var urlencoded = new URLSearchParams();
-//     urlencoded.append("score", `${number}`);
-
-//     var requestOptions = {
-//         method: 'PUT',
-//         headers: myHeaders,
-//         body: urlencoded,
-//         redirect: 'follow'
-//     };
-
-//     fetch("https://5f103a9700d4ab00161349f0.mockapi.io/scores/1/", requestOptions);
-//     showRecordResult(number);
-// }
-// let bestResult;
-// showRecordResult();

@@ -19,16 +19,16 @@ class Cell {
     }
     createElement(container, gameLevel) {
         let containerWidth = container.offsetWidth;
-        let cellWidth = (containerWidth - gameLevel) / gameLevel - 4;
+        let cellWidth = (((containerWidth - gameLevel) / gameLevel - 4) / containerWidth) * 100;
 
         this.element = createElement('div', {
             className: 'cell',
         }, this.props.number);
         this.element.addEventListener('click', this.clickHandler.bind(this));
 
-        this.element.style.width = `${cellWidth}px`;
-        this.element.style.height = `${cellWidth}px`;
-        this.element.style.fontSize = `${cellWidth*0.7}px`;
+        this.element.style.width = `${cellWidth}%`;
+        this.element.style.height = `${cellWidth}%`;
+        this.element.style.fontSize = `${cellWidth*5}%`;
 
     }
     render() {

@@ -30,9 +30,12 @@ function getLocalGameData() {
 const localGameData = getLocalGameData();
 
 function renderGameLevels(localGameDataObject, board) {
+    document.querySelector('.controls__main').classList.remove('none');
+    document.querySelector('.controls__game').classList.add('none');
     board.innerHTML = '';
     let levelClassName = '';
     for (let key in localGameDataObject) {
+
         if (localGameDataObject[key].isAccessible) {
             levelClassName = 'level__enabled';
         } else {
@@ -41,7 +44,19 @@ function renderGameLevels(localGameDataObject, board) {
 
         let levelEl = createElement('div', {
             className: levelClassName + ' level',
-        }, `${key}x${key}`);
+
+            children: [
+                createElement('div', {
+                    className: 'level__name',
+                }, `${key}x${key}`),
+                createElement('div', {
+                    className: 'level__score',
+                }, (function () {
+                    if (localGameDataObject[key].bestScore) return `Score: ${localGameDataObject[key].bestScore}`
+                    return '';
+                }()))
+            ]
+        });
         levelEl.setAttribute('data-level', key);
 
         board.append(levelEl);
@@ -59,14 +74,19 @@ renderGameLevels(localGameData, document.querySelector('.board'));
 function startGame(props) {
     const {
         level,
-        localGameDataObject
+        localGameDataObject,
+        moves,
+        board
     } = props;
-    const game = new Game(level, localGameDataObject);
+
+    const game = new Game(level, localGameDataObject, moves, board);
     game.render();
     getGlobalScoreData(level);
+    document.querySelector('.controls__main').classList.add('none');
+    document.querySelector('.controls__game').classList.remove('none');
+    if (localStorage.getItem('gameProcess')) document.querySelector('#load').disabled = false;
+
 }
-
-
 
 function getGlobalScoreData(level) {
     fetch('https://5f103a9700d4ab00161349f0.mockapi.io/scores')
@@ -83,17 +103,72 @@ function getGlobalScoreData(level) {
         })
 }
 
+function drawLeaderboard() {
+    const table = createElement('table', {
+        className: 'leaderboard-table',
+        children: [
+            createElement('tr', {
+                children: [
+                    createElement('th', {}, 'Level'),
+                    createElement('th', {}, 'Score'),
+                    createElement('th', {}, 'Player')
+                ]
+            })
+        ]
+    })
+    document.querySelector('.leaderboard').append(table);
+    fetch('https://5f103a9700d4ab00161349f0.mockapi.io/scores')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(el => {
+                let rowEl = createElement('tr', {
+                    children: [
+                        createElement('td', {}, `${el.level}x${el.level}`),
+                        createElement('td', {}, el.score),
+                        createElement('td', {}, el.name),
+                    ]
+                });
+                table.append(rowEl);
+            })
+        })
+}
 
-function showHideInstructions() {
-    document.querySelector('.instructions-info').classList.toggle('hidden');
+document.querySelector('#load').addEventListener('click', () => {
+    const loadedBoard = JSON.parse(localStorage.getItem('gameProcess'));
+    // document.querySelector('.board').textContent = '';
+    startGame({
+        level: loadedBoard.level,
+        localGameDataObject: JSON.parse(localStorage.getItem('localGameData')),
+        moves: loadedBoard.moves,
+        board: loadedBoard.board,
+    })
+});
+
+function showHidePopup() {
+    document.querySelector(`.${this.id}`).classList.toggle('hidden');
+    document.querySelector(`.${this.id}`).classList.toggle('visible');
     document.querySelector('.container').classList.toggle('innactive');
 }
 
-document.querySelector('#instructions').onclick = showHideInstructions;
-document.querySelector('.instructions-info .close').onclick = showHideInstructions;
+document.querySelector('#instructions').onclick = showHidePopup;
+document.querySelector('#leaderboard').addEventListener('click', function () {
+    showHidePopup.apply(this);
+    if (!document.querySelector('.leaderboard-table')) {
+        drawLeaderboard()
+    }
+});
 
 document.body.addEventListener('click', function (event) {
-    if (event.target === document.querySelector('.container.innactive')) {
-        showHideInstructions();
+    if (event.target.classList.contains('close')) {
+        event.target.parentElement.classList.toggle('hidden');
+        event.target.parentElement.classList.toggle('visible');
+        document.querySelector('.container').classList.toggle('innactive');
+
+    }
+    if (event.target.classList.contains('innactive')) {
+        let el = document.querySelector('.popup.visible');
+        el.classList.toggle('hidden');
+        el.classList.toggle('visible');
+        event.target.classList.toggle('innactive');
     }
 })

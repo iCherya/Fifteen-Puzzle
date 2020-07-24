@@ -1,18 +1,46 @@
 class Game {
-    constructor(gameLevel, localGameDataObject) {
+    constructor(gameLevel, localGameDataObject, moves, board) {
+
         this.container = document.querySelector('.board');
         this.gameLevel = gameLevel;
-        this.START_BOARD_ARR = Game.generateStartBoard(gameLevel);
+        this.START_BOARD_ARR = Game.generateStartBoard(this.gameLevel);
         this.isWin = false;
         this.localGameData = localGameDataObject;
-        this.board = this.createRandomBoard();
+
+        this.board = board || this.createRandomBoard();
         this.move = this.move.bind(this);
-        this.moveCount = 0;
+        this.moveCount = moves || 0;
+
         this.init(this.board);
 
         this.renderResultsTable(this.localGameData);
 
         document.querySelector('.game-stats').classList.remove('hidden');
+
+        document.querySelector('#level').addEventListener('click', () => {
+            renderGameLevels(this.localGameData, document.querySelector('.board'));
+
+        });
+
+        document.querySelector('#save').addEventListener('click', () => {
+            let boardExport = {};
+            for (let key in this.board) {
+                if (!this.board[key].props) {
+                    boardExport[key] = 'empty'
+                } else {
+                    boardExport[key] = this.board[key].props.number;
+                }
+            }
+            const gameProcess = {
+                level: this.gameLevel,
+                moves: this.moveCount,
+                board: boardExport,
+            }
+            localStorage.setItem('gameProcess', JSON.stringify(gameProcess));
+            document.querySelector('#load').disabled = false;
+            event.target.classList.add('saved');
+            setTimeout(() => document.querySelector('#save').classList.remove('saved'), 2000);
+        });
         const swipes = new Hammer(this.container);
         swipes.get('swipe').set({
             direction: Hammer.DIRECTION_ALL
@@ -91,7 +119,7 @@ class Game {
             return Game.convertArrayToBoard(randomBoard);
         }
 
-        return this.createRandomBoard();;
+        return this.createRandomBoard();
     }
     getIndex(number) {
         for (let index = 0; index < this.gameLevel ** 2; index++) {
@@ -233,13 +261,9 @@ class Game {
 
     }
     win() {
-        this.board[this.gameLevel * this.gameLevel - 2].element.classList.remove('cell--can-move');
-        this.board[this.gameLevel * (this.gameLevel - 1) - 1].element.classList.remove('cell--can-move');
-
+        document.querySelector('.controls__main').classList.toggle('none');
+        document.querySelector('.controls__game').classList.toggle('none');
         this.isWin = true;
-
-
-
 
 
         if (this.gameLevel !== 9) {
@@ -301,9 +325,6 @@ class Game {
             const submitResultEl = createElement('div', {
                 className: 'submit-result',
                 children: [
-                    createElement('div', {
-                        className: 'close',
-                    }),
                     createElement('div', {}, 'New Record!'),
                     createElement('input', {
                         type: 'text',
@@ -315,25 +336,22 @@ class Game {
                     }),
                 ]
             }, )
-
-            submitResultEl.children[0].onclick = () => {
-                submitResultEl.style.display = 'none';
-                this.sumbitGlobalScoreData(playerName);
-            }
-            submitResultEl.children[3].onclick = () => {
-                if (submitResultEl.children[2].value.length > 0) {
-                    playerName = submitResultEl.children[2].value
+            submitResultEl.children[2].onclick = () => {
+                if (submitResultEl.children[1].value.length > 0) {
+                    playerName = submitResultEl.children[1].value;
                 }
+                submitResultEl.children[1].blur();
                 submitResultEl.style.display = 'none';
                 this.sumbitGlobalScoreData(playerName);
             }
-            submitResultEl.children[2].addEventListener('keyup', function (event) {
+            submitResultEl.children[1].addEventListener('keyup', function (event) {
                 if (event.keyCode === 13) {
                     event.preventDefault();
-                    submitResultEl.children[3].click();
+                    submitResultEl.children[2].click();
                 }
             });
             document.body.append(submitResultEl);
+            document.querySelector('.container').classList.add('innactive');
         }
     }
 }

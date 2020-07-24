@@ -23,7 +23,7 @@
     <title>Sliding Puzzle Game</title>
     <link rel="stylesheet" href="./style.css">
     <script src="./js/lib.js" defer></script>
-    <script src="https://hammerjs.github.io/dist/hammer.js" defer></script>
+    <script src="./js/hammer.min.js" defer></script>
     <script src="./js/Game.js" defer></script>
     <script src="./js/Cell.js" defer></script>
     <script src="./js/index.js" defer></script>
@@ -31,15 +31,18 @@
 
 <body>
     <div class="container">
-        <!-- <div class="submit-result">
-            <div class="close"></div>
-            <input type="text" placeholder="What's your name, champ?">
-            <input type="button" value="Submit">
-        </div> -->
         <h1>Sliding Puzzle Game</h1>
         <div class="controls">
-            <button id="instructions" title="Instructions">Instructions</button>
-            <button disabled title="Can not solve for now">Solve</button>
+            <div class="controls__main">
+                <button id="instructions" title="Instructions">Instructions</button>
+                <button id="leaderboard" title="Leaderboard">Leaderboard</button>
+            </div>
+            <div class="controls__game none">
+                <button id="level" title="Levels list">Levels</button>
+                <button id="save" title="Save cells position">Save</button>
+                <button id="load" disabled title="Load saved cells position">Load</button>
+                <button id="solve" disabled title="Can not solve for now">Solve</button>
+            </div>
         </div>
         <div class="board">
         </div>
@@ -81,14 +84,20 @@
             </svg>
         </a>
     </div>
-    <div class="instructions-info hidden">
+    <div class="instructions popup hidden">
         <div class="close"></div>
         <h2>Instructions</h2>
-        <p>Starting at the top left corner, move the tiles in ascending order in the grid. The tile in the lower right
+        <p>Starting at the top left corner, move the tiles in ascending order in the grid. The tile in the lower
+            right
             corner should remain "empty". To move a tile you can click on it, use your arrow keys or swipe on mobile
             screen.
             The resulting order should be like:</p>
         <div><img src="./img/300px-15-puzzle.jpg" alt="15 Puzzle Game"></div>
+    </div>
+    <div class="leaderboard popup hidden">
+        <div class="close"></div>
+        <h2>Leaderboard</h2>
+        <p>🏆 Best results of Sliding Puzzle Game</p>
     </div>
 
 </body>

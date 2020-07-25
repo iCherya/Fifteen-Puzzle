@@ -58,9 +58,13 @@ function renderGameLevels(localGameDataObject, board) {
             ]
         });
         levelEl.setAttribute('data-level', key);
-
         board.append(levelEl);
     }
+    if (board.lastChild.getAttribute('data-level') === '9' &&
+        board.lastChild.textContent !== '9x9') {
+        board.classList.add('game-over');
+    }
+
     document.querySelectorAll('.level__enabled').forEach(levelEl => {
         levelEl.addEventListener('click', () => startGame({
             level: +levelEl.getAttribute('data-level'),
@@ -71,7 +75,10 @@ function renderGameLevels(localGameDataObject, board) {
 
 renderGameLevels(localGameData, document.querySelector('.board'));
 
+let g;
+
 function startGame(props) {
+
     const {
         level,
         localGameDataObject,
@@ -81,11 +88,12 @@ function startGame(props) {
 
     const game = new Game(level, localGameDataObject, moves, board);
     game.render();
+    g = game;
     getGlobalScoreData(level);
     document.querySelector('.controls__main').classList.add('none');
     document.querySelector('.controls__game').classList.remove('none');
+    document.querySelector('.board').classList.remove('game-over');
     if (localStorage.getItem('gameProcess')) document.querySelector('#load').disabled = false;
-
 }
 
 function getGlobalScoreData(level) {
@@ -135,7 +143,6 @@ function drawLeaderboard() {
 
 document.querySelector('#load').addEventListener('click', () => {
     const loadedBoard = JSON.parse(localStorage.getItem('gameProcess'));
-    // document.querySelector('.board').textContent = '';
     startGame({
         level: loadedBoard.level,
         localGameDataObject: JSON.parse(localStorage.getItem('localGameData')),
@@ -163,12 +170,15 @@ document.body.addEventListener('click', function (event) {
         event.target.parentElement.classList.toggle('hidden');
         event.target.parentElement.classList.toggle('visible');
         document.querySelector('.container').classList.toggle('innactive');
-
     }
+
     if (event.target.classList.contains('innactive')) {
-        let el = document.querySelector('.popup.visible');
-        el.classList.toggle('hidden');
-        el.classList.toggle('visible');
-        event.target.classList.toggle('innactive');
+        if (document.querySelector('.popup.visible')) {
+            let el = document.querySelector('.popup.visible');
+            el.classList.toggle('hidden');
+            el.classList.toggle('visible');
+            event.target.classList.toggle('innactive');
+        }
+
     }
 })

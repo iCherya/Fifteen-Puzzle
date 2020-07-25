@@ -22,6 +22,7 @@ class Game {
 
         });
 
+
         document.querySelector('#save').addEventListener('click', () => {
             let boardExport = {};
             for (let key in this.board) {
@@ -39,7 +40,7 @@ class Game {
             localStorage.setItem('gameProcess', JSON.stringify(gameProcess));
             document.querySelector('#load').disabled = false;
             event.target.classList.add('saved');
-            setTimeout(() => document.querySelector('#save').classList.remove('saved'), 2000);
+            setTimeout(() => document.querySelector('#save').classList.remove('saved'), 1000);
         });
         const swipes = new Hammer(this.container);
         swipes.get('swipe').set({
@@ -47,6 +48,8 @@ class Game {
         });
         swipes.on("swipeleft swiperight swipeup swipedown", this.moveControls.bind(this));
         document.addEventListener('keyup', this.moveControls.bind(this));
+        document.querySelector('#solve').disabled = false;
+        document.querySelector('#solve').addEventListener('click', () => this.solve());
     }
     static convertArrayToBoard(boardArray) {
         return boardArray.reduce((board, cell, idx) => {
@@ -232,7 +235,6 @@ class Game {
     renderResultsTable(resultsObject) {
         document.querySelector('.game-stats__local--level').textContent = `${this.gameLevel}x${this.gameLevel}`;
         document.querySelector('.game-stats__local--value').textContent = resultsObject[this.gameLevel].bestScore || '-';
-        // document.querySelector('.game-stats__global--level').textContent = `${this.gameLevel}x${this.gameLevel}`;
     }
     sumbitGlobalScoreData(playerName) {
         var myHeaders = new Headers();
@@ -260,9 +262,81 @@ class Game {
             .catch(error => console.log('error', error));
 
     }
+    renderConsoleBoard() {
+        let boardArray = [];
+        for (let key in this.board) {
+            if (!this.board[key].props) {
+                boardArray.push('');
+            } else {
+                boardArray.push(this.board[key].props.number);
+            }
+        }
+
+        let boardDim = Math.sqrt(boardArray.length);
+        console.log('--- board ---');
+
+        for (let row = 0; row < boardDim; row++) {
+            let rowStr = '';
+            for (let col = 0; col < boardDim; col++) {
+
+                let el = boardArray[col + row * boardDim];
+
+                if (el === "") {
+                    rowStr += 'ee ';
+                } else {
+                    rowStr += el.toString().padStart(2, '0') + ' ';
+                }
+            }
+
+            console.log(rowStr);
+        }
+
+    }
+
+    solve() {
+        // this.renderConsoleBoard();
+
+        let boardArray = [];
+        for (let key in this.board) {
+            if (!this.board[key].props) {
+                boardArray.push('');
+            } else {
+                boardArray.push(this.board[key].props.number);
+            }
+        }
+        let board2d = create2dArray(boardArray, Math.sqrt(boardArray.length));
+
+        let solver = new NPuzzleSolver(board2d);
+        let solution = solver.solve();
+
+        let i = 0,
+            solutionMoves = solution.length;
+
+        function moveCellSolution() {
+            let boardArray = [];
+            for (let key in this.board) {
+                if (!this.board[key].props) {
+                    boardArray.push('');
+                } else {
+                    boardArray.push(this.board[key].props.number);
+                }
+            }
+
+            let element = boardArray.findIndex(el => el === solution[i].number);
+            this.move(this.board[element]);
+            i++;
+            if (i < solutionMoves) {
+                setTimeout(moveCellSolution.bind(this), 100);
+            }
+
+        }
+        moveCellSolution.call(this);
+    }
     win() {
+        // document.body.classList.remove('innactive');
         document.querySelector('.controls__main').classList.toggle('none');
         document.querySelector('.controls__game').classList.toggle('none');
+        document.querySelector('#solve').disabled = true;
         this.isWin = true;
 
 
@@ -323,7 +397,7 @@ class Game {
         if (this.moveCount < +globalScoreElValue || globalScoreElValue === "-") {
             let playerName = 'Unknown Hero';
             const submitResultEl = createElement('div', {
-                className: 'submit-result',
+                className: 'submit-result popup',
                 children: [
                     createElement('div', {}, 'New Record!'),
                     createElement('input', {
@@ -340,6 +414,7 @@ class Game {
                 if (submitResultEl.children[1].value.length > 0) {
                     playerName = submitResultEl.children[1].value;
                 }
+                document.querySelector('.container').classList.remove('innactive');
                 submitResultEl.children[1].blur();
                 submitResultEl.style.display = 'none';
                 this.sumbitGlobalScoreData(playerName);

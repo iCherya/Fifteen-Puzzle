@@ -18,10 +18,9 @@ class Game {
         document.querySelector('.game-stats').classList.remove('hidden');
 
         document.querySelector('#level').addEventListener('click', () => {
+            this.isWin = true;
             renderGameLevels(this.localGameData, document.querySelector('.board'));
-
         });
-
 
         document.querySelector('#save').addEventListener('click', () => {
             let boardExport = {};
@@ -50,6 +49,19 @@ class Game {
         document.addEventListener('keyup', this.moveControls.bind(this));
         document.querySelector('#solve').disabled = false;
         document.querySelector('#solve').addEventListener('click', () => this.solve());
+
+
+        document.querySelector('#load').addEventListener('click', () => {
+            const loadedBoard = JSON.parse(localStorage.getItem('gameProcess'));
+            this.isWin = true;
+            startGame({
+                level: loadedBoard.level,
+                localGameDataObject: JSON.parse(localStorage.getItem('localGameData')),
+                moves: loadedBoard.moves,
+                board: loadedBoard.board,
+            })
+        });
+
     }
     static convertArrayToBoard(boardArray) {
         return boardArray.reduce((board, cell, idx) => {
@@ -294,8 +306,7 @@ class Game {
     }
 
     solve() {
-        // this.renderConsoleBoard();
-
+        document.body.classList.add('innactive');
         let boardArray = [];
         for (let key in this.board) {
             if (!this.board[key].props) {
@@ -313,6 +324,7 @@ class Game {
             solutionMoves = solution.length;
 
         function moveCellSolution() {
+            // this.renderConsoleBoard();
             let boardArray = [];
             for (let key in this.board) {
                 if (!this.board[key].props) {
@@ -333,7 +345,7 @@ class Game {
         moveCellSolution.call(this);
     }
     win() {
-        // document.body.classList.remove('innactive');
+        document.body.classList.remove('innactive');
         document.querySelector('.controls__main').classList.toggle('none');
         document.querySelector('.controls__game').classList.toggle('none');
         document.querySelector('#solve').disabled = true;
@@ -371,10 +383,12 @@ class Game {
             ]
         })
         newGame.lastChild.children[0].addEventListener('click', () => {
+            this.isWin = true;
             renderGameLevels(this.localGameData, document.querySelector('.board'));
             document.querySelector('.game-stats').classList.add('hidden');
         });
         newGame.lastChild.children[1].addEventListener('click', () => {
+            this.isWin = true;
             startGame({
                 level: this.gameLevel,
                 localGameDataObject: this.localGameData,
@@ -385,6 +399,7 @@ class Game {
                 className: 'win-controls__next'
             }, 'Next level')
             nextLevelEl.addEventListener('click', () => {
+                this.isWin = true;
                 startGame({
                     level: this.gameLevel + 1,
                     localGameDataObject: this.localGameData,

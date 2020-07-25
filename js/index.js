@@ -75,20 +75,18 @@ function renderGameLevels(localGameDataObject, board) {
 
 renderGameLevels(localGameData, document.querySelector('.board'));
 
-let g;
+let g = {};
 
 function startGame(props) {
-
     const {
         level,
         localGameDataObject,
         moves,
-        board
+        board,
     } = props;
 
     const game = new Game(level, localGameDataObject, moves, board);
     game.render();
-    g = game;
     getGlobalScoreData(level);
     document.querySelector('.controls__main').classList.add('none');
     document.querySelector('.controls__game').classList.remove('none');
@@ -140,16 +138,6 @@ function drawLeaderboard() {
             })
         })
 }
-
-document.querySelector('#load').addEventListener('click', () => {
-    const loadedBoard = JSON.parse(localStorage.getItem('gameProcess'));
-    startGame({
-        level: loadedBoard.level,
-        localGameDataObject: JSON.parse(localStorage.getItem('localGameData')),
-        moves: loadedBoard.moves,
-        board: loadedBoard.board,
-    })
-});
 
 function showHidePopup() {
     document.querySelector(`.${this.id}`).classList.toggle('hidden');

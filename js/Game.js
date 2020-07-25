@@ -48,7 +48,36 @@ class Game {
         swipes.on("swipeleft swiperight swipeup swipedown", this.moveControls.bind(this));
         document.addEventListener('keyup', this.moveControls.bind(this));
         document.querySelector('#solve').disabled = false;
-        document.querySelector('#solve').addEventListener('click', () => this.solve());
+
+        document.querySelector('#solve').addEventListener('click', () => {
+            document.querySelector('.popupSolve').textContent = '';
+            const elem = createElement('div', {
+                className: 'popup',
+                children: [
+                    createElement('div', {}, `Are you sure?`),
+                    createElement('input', {
+                        type: 'button',
+                        value: 'Yes, I\'m a loser',
+                    }, ),
+                    createElement('input', {
+                        type: 'button',
+                        value: 'No, I will try harder',
+                    }, ),
+                ],
+            }, '')
+
+            elem.children[1].addEventListener('click', () => {
+                elem.style.display = 'none';
+                this.solve();
+            });
+            elem.children[2].onclick = () => {
+
+                elem.style.display = 'none';
+                document.body.classList.remove('innactive');
+            }
+            document.querySelector('.popupSolve').append(elem);
+            document.body.classList.add('innactive');
+        })
 
 
         document.querySelector('#load').addEventListener('click', () => {
@@ -306,7 +335,7 @@ class Game {
     }
 
     solve() {
-        document.body.classList.add('innactive');
+
         let boardArray = [];
         for (let key in this.board) {
             if (!this.board[key].props) {

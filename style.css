@@ -318,22 +318,25 @@ h1 {
     font-size: 18px;
 }
 
-.submit-result input[type="button"] {
+input[type="button"] {
     background: steelblue;
     color: white;
     font-size: 18px;
     border: none;
     border-radius: 2px;
     cursor: pointer;
+    width: 100%;
+    margin: 5px;
 }
 
-.submit-result input[type="button"]:hover {
+input[type="button"]:hover {
     box-shadow: 1px 3px 3px 0 #b9b9b9a8;
 }
 
-.submit-result input[type="button"]:active {
+input[type="button"]:active {
     transform: translateY(2px);
 }
+
 
 /* Additional */
 

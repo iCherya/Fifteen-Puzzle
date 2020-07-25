@@ -6,7 +6,7 @@ class Game {
         this.START_BOARD_ARR = Game.generateStartBoard(this.gameLevel);
         this.isWin = false;
         this.localGameData = localGameDataObject;
-
+        this.isComplitedByHuman = true;
         this.board = board || this.createRandomBoard();
         this.move = this.move.bind(this);
         this.moveCount = moves || 0;
@@ -54,10 +54,10 @@ class Game {
             const elem = createElement('div', {
                 className: 'popup',
                 children: [
-                    createElement('div', {}, `Are you sure?`),
+                    createElement('div', {}, `Are you sure? Your game result will not be recorded!`),
                     createElement('input', {
                         type: 'button',
-                        value: 'Yes, I\'m a loser',
+                        value: 'Yes, solve it, I\'m a loser',
                     }, ),
                     createElement('input', {
                         type: 'button',
@@ -335,7 +335,7 @@ class Game {
     }
 
     solve() {
-
+        this.isComplitedByHuman = false;
         let boardArray = [];
         for (let key in this.board) {
             if (!this.board[key].props) {
@@ -374,6 +374,7 @@ class Game {
         moveCellSolution.call(this);
     }
     win() {
+        console.log(this);
         document.body.classList.remove('innactive');
         document.querySelector('.controls__main').classList.toggle('none');
         document.querySelector('.controls__game').classList.toggle('none');
@@ -438,7 +439,7 @@ class Game {
         }
         render(newGame, this.container);
         let globalScoreElValue = document.querySelector('.game-stats__global--value').textContent;
-        if (this.moveCount < +globalScoreElValue || globalScoreElValue === "-") {
+        if (this.isComplitedByHuman && (this.moveCount < +globalScoreElValue || globalScoreElValue === "-")) {
             let playerName = 'Unknown Hero';
             const submitResultEl = createElement('div', {
                 className: 'submit-result popup',

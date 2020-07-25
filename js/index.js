@@ -75,8 +75,6 @@ function renderGameLevels(localGameDataObject, board) {
 
 renderGameLevels(localGameData, document.querySelector('.board'));
 
-let g = {};
-
 function startGame(props) {
     const {
         level,

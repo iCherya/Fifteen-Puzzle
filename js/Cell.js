@@ -8,7 +8,7 @@ class Cell {
     changeProps(newProps) {
         this.props = {
             ...this.props,
-            ...newProps
+            ...newProps,
         };
         this.render();
     }
@@ -21,26 +21,28 @@ class Cell {
         let containerWidth = container.offsetWidth;
         let cellWidth = (((containerWidth - gameLevel) / gameLevel - 4) / containerWidth) * 100;
 
-        this.element = createElement('div', {
-            className: 'cell',
-        }, this.props.number);
-        this.element.addEventListener('click', this.clickHandler.bind(this));
+        this.element = createElement(
+            "div",
+            {
+                className: "cell",
+            },
+            this.props.number
+        );
+        this.element.addEventListener("click", this.clickHandler.bind(this));
 
         this.element.style.width = `${cellWidth}%`;
         this.element.style.height = `${cellWidth}%`;
-        this.element.style.fontSize = `${cellWidth*5}%`;
-
+        this.element.style.fontSize = `${cellWidth * 5}%`;
     }
     render() {
         if (this.props.canMove) {
-            this.element.classList.add('cell--can-move');
+            this.element.classList.add("cell--can-move");
         } else {
-            this.element.classList.remove('cell--can-move');
+            this.element.classList.remove("cell--can-move");
         }
         if (this.props.position) {
-            this.element.style.left = this.props.position.cell * (100 / this.gameLevel) + '%';
-            this.element.style.top = this.props.position.row * (100 / this.gameLevel) + '%';
+            this.element.style.left = this.props.position.cell * (100 / this.gameLevel) + "%";
+            this.element.style.top = this.props.position.row * (100 / this.gameLevel) + "%";
         }
-
     }
 }

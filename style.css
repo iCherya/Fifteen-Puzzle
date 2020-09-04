@@ -1,12 +1,44 @@
 body,
 input {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+        "Open Sans", "Helvetica Neue", sans-serif;
     font-weight: 300;
 }
 
 h1 {
     text-align: center;
     margin: 15px auto;
+}
+
+button {
+    position: relative;
+    font-family: inherit;
+    padding: 5px 5px;
+    cursor: pointer;
+    background: white;
+    border: 2px solid steelblue;
+    color: steelblue;
+    font-size: 1em;
+    border-radius: 3px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 2px;
+}
+
+button:hover {
+    box-shadow: 1px 3px 3px 0 #b9b9b9a8;
+}
+
+button:active {
+    transform: translateY(2px);
+}
+
+button:disabled {
+    cursor: not-allowed;
+    background: rgb(231, 231, 231);
+    color: gray;
+    border: 2px solid gray;
+    box-shadow: none;
 }
 
 /* Top level "menu" */
@@ -20,21 +52,6 @@ h1 {
     margin-bottom: 10px;
 }
 
-.controls button {
-    position: relative;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    padding: 5px 5px;
-    cursor: pointer;
-    background: white;
-    border: 2px solid steelblue;
-    color: steelblue;
-    font-size: 1em;
-    border-radius: 3px;
-    width: 50%;
-    box-sizing: border-box;
-    margin: 2px;
-}
-
 .controls button:first-of-type {
     margin-left: 0;
 }
@@ -43,38 +60,23 @@ h1 {
     margin-right: 0;
 }
 
-.controls button:hover {
-    box-shadow: 1px 3px 3px 0 #b9b9b9a8;
-}
-
-.controls button:active {
-    transform: translateY(2px);
-}
-
-.controls button:disabled {
-    cursor: not-allowed;
-    background: rgb(231, 231, 231);
-    color: gray;
-    border: 2px solid gray;
-    box-shadow: none;
-    transform: translateY(0);
-}
-
 .controls .saved:after {
-    content: 'd';
+    content: "d";
 }
 
 /* Popups*/
 
 .popup {
-    width: 280px;
-    position: fixed;
+    width: 90%;
+    max-width: 500px;
+    min-width: 250px;
+    position: absolute;
     top: 40px;
     left: 50vw;
     transform: translateX(-50%);
     background: white;
-    padding: 10px 30px 30px 30px;
-    box-sizing: content-box;
+    padding: 20px;
+    box-sizing: border-box;
     border: 2px solid steelblue;
     border-radius: 5px;
     box-shadow: 0 0 9999px 9999px rgba(70, 130, 180, 0.38);
@@ -82,6 +84,13 @@ h1 {
     visibility: visible;
     opacity: 1;
     transition: visibility 0s, opacity 0.1s linear;
+}
+
+.popup img {
+    width: 100%;
+    max-width: 300px;
+    display: block;
+    margin: 0 auto;
 }
 
 .close {
@@ -157,7 +166,7 @@ h1 {
     box-shadow: 1px 1px 0 0 rgba(0, 0, 0, 0.2);
     margin: 2px;
     border-radius: 5px;
-    transition: all .1s ease-in;
+    transition: all 0.1s ease-in;
 }
 
 .cell {
@@ -170,9 +179,8 @@ h1 {
 }
 
 .level {
-    width: calc(100%/3 - 4px);
-    height: calc(100%/3 - 4px);
-    cursor: pointer;
+    width: calc(100% / 3 - 4px);
+    height: calc(100% / 3 - 4px);
     position: relative;
 }
 
@@ -183,12 +191,13 @@ h1 {
     text-align: center;
 }
 
-.level__enabled {
+.level__true {
     border-width: 2px;
     background: white;
+    cursor: pointer;
 }
 
-.level__disabled {
+.level__false {
     background: rgb(231, 231, 231);
     color: gray;
     border: 2px solid gray;
@@ -202,8 +211,8 @@ h1 {
     justify-content: center;
     display: flex;
     position: absolute;
-    bottom: calc(50%/3);
-    right: calc(50%/3);
+    bottom: calc(50% / 3);
+    right: calc(50% / 3);
     transform: translate(50%, 50%);
     box-sizing: border-box;
 }
@@ -294,18 +303,7 @@ h1 {
 
 .submit-result {
     display: block;
-    position: absolute;
-    width: 90%;
-    max-width: 500px;
-    min-width: 250px;
-    left: 50%;
     top: 20vh;
-    transform: translateX(-50%);
-    z-index: 10;
-    padding: 20px;
-    background: white;
-    border: 2px solid steelblue;
-    box-sizing: border-box;
     text-align: center;
     font-size: 20px;
 }
@@ -314,29 +312,14 @@ h1 {
     padding: 5px;
     width: 100%;
     box-sizing: border-box;
-    margin: 5px;
+    margin: 2px;
     font-size: 18px;
 }
 
-input[type="button"] {
-    background: steelblue;
+.submit-result button {
     color: white;
-    font-size: 18px;
-    border: none;
-    border-radius: 2px;
-    cursor: pointer;
-    width: 100%;
-    margin: 5px;
+    background: steelblue;
 }
-
-input[type="button"]:hover {
-    box-shadow: 1px 3px 3px 0 #b9b9b9a8;
-}
-
-input[type="button"]:active {
-    transform: translateY(2px);
-}
-
 
 /* Additional */
 
@@ -356,14 +339,14 @@ input[type="button"]:active {
     z-index: 2;
 }
 
-.loading:after {
-    content: '↻';
-    display: inline-block;
-    animation: rotating infinite 1s linear;
-}
-
 .container .none {
     display: none;
+}
+
+.loading:after {
+    content: "↻";
+    display: inline-block;
+    animation: rotating infinite 1s linear;
 }
 
 /* Media */
